@@ -2,8 +2,8 @@
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/login
     return_content: yes
-    user: admin
-    password: "Password#1"
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ vxflex_gateway_pw }}"
     force_basic_auth: yes
     validate_certs: False
     status_code:
@@ -11,17 +11,47 @@
       - 201
       - 202
   register: msg
-- debug:
-    var: msg.json
 
+- name: "Check to see if protection Domain exists"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
+    method: POST
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "name": "{{ vxflex_protection_domain_name }}"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+      - 500
+  register: protection_domain_id
 
-- name: "Create Protection Domain pd1"
+- name: "Create Protection Domain if it does not exist"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances
     method: POST
-    user: admin
+    user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
-    body: {"name":"pd1"}
+    body: { "name": "{{ vxflex_protection_domain_name }}"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  when: protection_domain_id.status == 500
+
+- name: "Register pd var"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
+    method: POST
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "name": "{{ vxflex_protection_domain_name }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -30,19 +60,14 @@
       - 201
       - 202
   register: protection_domain_id
-  ignore_errors: yes
 
-- debug:
-    var: protection_domain_id.json.id
-
-
-- name: "Create Storage Pool sp1"
+- name: "Check to see if Storage Pool exists"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances/action/queryIdByKey
     method: POST
-    user: admin
+    user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
-    body: {"protectionDomainId":"{{ protection_domain_id.json.id }}","name":"sp1"}
+    body: { "protectionDomainId": "{{ protection_domain_id.json }}", "name": "{{ vxflex_storage_pool_name }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -50,6 +75,70 @@
       - 200
       - 201
       - 202
-    ignore_errors: yes
-  register: storage_pool
+      - 500
+  register: storage_pool_id
 
+- name: "Create Storage Pool if it does not exist"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances
+    method: POST
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "protectionDomainId": "{{ protection_domain_id.json }}", "name": "{{ vxflex_storage_pool_name }}"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  when: storage_pool_id.status == 500
+
+- name: "Get system ID"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/System/instances
+    method: GET
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  register: system_id
+
+- name: "Print system id"
+  debug:
+    var: system_id.json[0].id
+
+- name: "Rename system"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/instances/System::{{system_id.json[0].id}}/action/setSystemName
+    method: POST
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "newName": "{{ vxflex_system_name }}"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: false
+    status_code:
+      - 200
+      - 201
+      - 202
+
+- name: "Set SDC Policy to auto approve"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/instances/System::{{system_id.json[0].id}}/action/setRestrictedSdcMode
+    method: POST
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "restrictedSdcMode": "None"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: false
+    status_code:
+      - 200
+      - 201
+      - 202
