@@ -1,0 +1,55 @@
+- name: "Get ScaleIO token for Auth"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/login
+    return_content: yes
+    user: admin
+    password: "Password#1"
+    force_basic_auth: yes
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  register: msg
+- debug:
+    var: msg.json
+
+
+- name: "Create Protection Domain pd1"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances
+    method: POST
+    user: admin
+    password: "{{ msg.json }}"
+    body: {"name":"pd1"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  register: protection_domain_id
+  ignore_errors: yes
+
+- debug:
+    var: protection_domain_id.json.id
+
+
+- name: "Create Storage Pool sp1"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances
+    method: POST
+    user: admin
+    password: "{{ msg.json }}"
+    body: {"protectionDomainId":"{{ protection_domain_id.json.id }}","name":"sp1"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+    ignore_errors: yes
+  register: storage_pool
+
