@@ -69,7 +69,7 @@
 - debug:
     var: "{{ vxflex_version is version('3.0', '>') }}"
   tags:
-    - debug
+    - debug1
 
 - name: "Check to see if Storage Pool exists"
   uri:
