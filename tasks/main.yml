@@ -67,7 +67,7 @@
     - debug
 
 - debug:
-    var: {{ vxflex_version is version('3.0', '>' }}
+    var: {{ vxflex_version is version('3.0', '>') }}
   tags:
     - debug
 
