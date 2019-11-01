@@ -79,8 +79,16 @@
       - 500
   register: storage_pool_id
 
+#- debug:
+#    msg: "{{ vxflex_version is version('3.0', '>') }}"
+#  tags:
+#    - debug
+
 - debug:
-    msg: "{{ vxflex_version is version('3.0', '>') }}"
+    msg: "Hello please work"
+  tags:
+    - debug
+
 
 - name: "Create Storage Pool if it does not exist"
   uri:
