@@ -62,9 +62,9 @@
   register: protection_domain_id
 
 - debug:
-    var: "{{ vxflex_version }}"
+    mgs: "{{ vxflex_version }}"
   tags:
-    - debug1
+    - debug
 
 - debug:
     var: "{{ vxflex_version is version('3.0', '>') }}"
