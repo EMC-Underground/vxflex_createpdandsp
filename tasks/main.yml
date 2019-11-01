@@ -62,6 +62,9 @@
   register: protection_domain_id
 
 - debug:
+    var: "{{ vxflex_version }}"
+
+- debug:
     var: {{ vxflex_version is version('3.0', '>' }}
   tags:
     - debug
