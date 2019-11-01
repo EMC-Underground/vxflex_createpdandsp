@@ -63,6 +63,8 @@
 
 - debug:
     var: "{{ vxflex_version }}"
+  tags:
+    - debug
 
 - debug:
     var: {{ vxflex_version is version('3.0', '>' }}
