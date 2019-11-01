@@ -85,7 +85,7 @@
 #    - debug
 
 - debug:
-    msg: "Hello please work"
+    msg: "{{ vxflex_version is version('3.0', '>') }}"
   tags:
     - debug
 
