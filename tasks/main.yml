@@ -110,7 +110,7 @@
       - 202
   when:
     - storage_pool_id.status == 500
-    - {{ {{ vxflex_version }} is version('3.0', '>' }}
+    - {{ vxflex_version is version('3.0', '>' }}
 
 - name: "Get system ID"
   uri:
