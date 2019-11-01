@@ -62,7 +62,7 @@
   register: protection_domain_id
 
 - debug:
-    msg: "{{ vxflex_version }}"
+    msg: {{ vxflex_version }}
   tags:
     - debug
 
