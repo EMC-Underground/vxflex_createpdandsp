@@ -94,6 +94,24 @@
       - 202
   when: storage_pool_id.status == 500
 
+- name: "Create Storage Pool if it does not exist for 3.x Software"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances
+    method: POST
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "protectionDomainId": "{{ protection_domain_id.json }}", "name": "{{ vxflex_storage_pool_name }}", "mediaType": "SSD"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  when:
+    - storage_pool_id.status == 500
+    - {{ vxflex_version }} is version('2.7','>')
+
 - name: "Get system ID"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/System/instances
