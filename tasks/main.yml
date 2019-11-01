@@ -61,6 +61,11 @@
       - 202
   register: protection_domain_id
 
+- debug:
+    var: "{{ vxflex_version is version('3.0', '>' }}"
+  tags:
+    - debug
+
 - name: "Check to see if Storage Pool exists"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances/action/queryIdByKey
