@@ -79,13 +79,20 @@
       - 500
   register: storage_pool_id
 
-#- debug:
-#    msg: "{{ vxflex_version is version('3.0', '>') }}"
-#  tags:
-#    - debug
 
 - debug:
     msg: "{{ vxflex_version is version('3.0', '>') }}"
+  tags:
+    - debug
+
+- name: "Check vxflex version and register results to a variable"
+  set_fact:
+    version_check: "{{ vxflex_version is version('3.0', '<') }}"
+  tags:
+    - debug
+
+- debug:
+    var: version_check
   tags:
     - debug
 
@@ -123,6 +130,7 @@
       - 202
   when:
     - storage_pool_id.status == 500
+    - "{{ vxflex_version is version('3.0', '>') }}"
 
 - name: "Get system ID"
   uri:
