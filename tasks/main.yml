@@ -175,7 +175,7 @@
       - 201
       - 202
   when:
-    - system_id.json.name != {{ vxflex_system_name }}
+    - system_id.json.name != "{{ vxflex_system_name }}"
 
 - name: "Set SDC Policy to auto approve"
   uri:
