@@ -174,8 +174,14 @@
       - 200
       - 201
       - 202
-  when:
-    - system_id.json.name != "{{ vxflex_system_name }}"
+      - 500
+  register: rename_result
+
+- name "Show Rename results"
+  debug:
+    var: rename_result
+  tags:
+    - debug
 
 - name: "Set SDC Policy to auto approve"
   uri:
