@@ -174,8 +174,9 @@
       - 200
       - 201
       - 202
-      - 500
   register: rename_result
+  failed_when:
+    - rename_result.json.errorCode != 989
 
 - name: "Show Rename results"
   debug:
