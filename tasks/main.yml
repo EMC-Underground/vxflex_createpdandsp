@@ -177,7 +177,7 @@
       - 500
   register: rename_result
 
-- name "Show Rename results"
+- name: "Show Rename results"
   debug:
     var: rename_result
   tags:
