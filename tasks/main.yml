@@ -151,6 +151,14 @@
 - name: "Print system id"
   debug:
     var: system_id.json[0].id
+  tags:
+    - debug
+
+- name: "Print System Information"
+  debug:
+    var: system_id
+  tags:
+    - debug
 
 - name: "Rename system"
   uri:
