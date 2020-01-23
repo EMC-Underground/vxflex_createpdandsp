@@ -11,6 +11,7 @@
       - 201
       - 202
   register: msg
+  run_once: True
 
 - name: "Check to see if protection Domain exists"
   uri:
@@ -28,6 +29,7 @@
       - 202
       - 500
   register: protection_domain_id
+  run_once: True
 
 - name: "Create Protection Domain if it does not exist"
   uri:
@@ -44,6 +46,7 @@
       - 201
       - 202
   when: protection_domain_id.status == 500
+  run_once: True
 
 - name: "Register pd var"
   uri:
@@ -60,6 +63,7 @@
       - 201
       - 202
   register: protection_domain_id
+  run_once: True
 
 
 - name: "Check to see if Storage Pool exists"
@@ -78,6 +82,7 @@
       - 202
       - 500
   register: storage_pool_id
+  run_once: True
 
 
 - debug:
@@ -114,6 +119,7 @@
   when:
     - storage_pool_id.status == 500
     - version_check == true
+  run_once: True
 
 - name: "Create Storage Pool if it does not exist for 3.x Software"
   uri:
@@ -132,6 +138,7 @@
   when:
     - storage_pool_id.status == 500
     - version_check == false
+  run_once: True
 
 - name: "Get system ID"
   uri:
@@ -147,6 +154,7 @@
       - 201
       - 202
   register: system_id
+  run_once: True
 
 - name: "Print system id"
   debug:
@@ -177,6 +185,7 @@
   register: rename_result
   failed_when:
     - rename_result.json.errorCode != 989
+  run_once: True
 
 - name: "Show Rename results"
   debug:
@@ -198,3 +207,4 @@
       - 200
       - 201
       - 202
+  run_once: True
