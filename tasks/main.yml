@@ -1,6 +1,7 @@
 - name: "Get ScaleIO token for Auth"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/login
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/login"
     return_content: yes
     user: "{{ vxflex_gateway_username }}"
     password: "{{ vxflex_gateway_pw }}"
@@ -10,15 +11,18 @@
       - 200
       - 201
       - 202
-  register: msg
+  register: auth
   run_once: True
+  tags:
+    - create_pdandsp
 
 - name: "Check to see if protection Domain exists"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/ProtectionDomain/instances/action/queryIdByKey"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "name": "{{ vxflex_protection_domain_name }}"}
     force_basic_auth: yes
     body_format: json
@@ -30,13 +34,16 @@
       - 500
   register: protection_domain_id
   run_once: True
+  tags:
+    - create_pdandsp
 
 - name: "Create Protection Domain if it does not exist"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/ProtectionDomain/instances"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "name": "{{ vxflex_protection_domain_name }}"}
     force_basic_auth: yes
     body_format: json
@@ -47,13 +54,16 @@
       - 202
   when: protection_domain_id.status == 500
   run_once: True
+  tags:
+    - create_pdandsp
 
 - name: "Register pd var"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/ProtectionDomain/instances/action/queryIdByKey"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "name": "{{ vxflex_protection_domain_name }}"}
     force_basic_auth: yes
     body_format: json
@@ -64,15 +74,19 @@
       - 202
   register: protection_domain_id
   run_once: True
+  tags:
+    - create_pdandsp
 
 
 - name: "Check to see if Storage Pool exists"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances/action/queryIdByKey
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/StoragePool/instances/action/queryIdByKey"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
-    body: { "protectionDomainId": "{{ protection_domain_id.json }}", "name": "{{ vxflex_storage_pool_name }}"}
+    password: "{{ auth.json }}"
+    body: { "protectionDomainId": "{{ protection_domain_id.json }}",
+    "name": "{{ vxflex_storage_pool_name }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -83,32 +97,38 @@
       - 500
   register: storage_pool_id
   run_once: True
-
+  tags:
+    - create_pdandsp
 
 - debug:
     msg: "{{ vxflex_version is version('3.0', '>') }}"
   tags:
     - debug
+    - create_pdandsp
 
 - name: "Check vxflex version and register results to a variable"
   set_fact:
     version_check: "{{ vxflex_version is version('3.0', '<') }}"
   tags:
     - debug
+    - create_pdandsp
 
 - debug:
     var: version_check
   tags:
     - debug
+    - create_pdandsp
 
 
 - name: "Create Storage Pool if it does not exist"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/StoragePool/instances"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
-    body: { "protectionDomainId": "{{ protection_domain_id.json }}", "name": "{{ vxflex_storage_pool_name }}"}
+    password: "{{ auth.json }}"
+    body: { "protectionDomainId": "{{ protection_domain_id.json }}",
+    "name": "{{ vxflex_storage_pool_name }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -120,14 +140,18 @@
     - storage_pool_id.status == 500
     - version_check == true
   run_once: True
+  tags:
+    - create_pdandsp
 
 - name: "Create Storage Pool if it does not exist for 3.x Software"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/StoragePool/instances
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/StoragePool/instances"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
-    body: { "protectionDomainId": "{{ protection_domain_id.json }}", "name": "{{ vxflex_storage_pool_name }}", "mediaType": "SSD"}
+    password: "{{ auth.json }}"
+    body: { "protectionDomainId": "{{ protection_domain_id.json }}",
+    "name": "{{ vxflex_storage_pool_name }}", "mediaType": "SSD"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -139,13 +163,16 @@
     - storage_pool_id.status == 500
     - version_check == false
   run_once: True
+  tags:
+    - create_pdandsp
 
 - name: "Get system ID"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/System/instances
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/System/instances"
     method: GET
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -155,25 +182,30 @@
       - 202
   register: system_id
   run_once: True
+  tags:
+    - create_pdandsp
 
 - name: "Print system id"
   debug:
     var: system_id.json[0].id
   tags:
     - debug
+    - create_pdandsp
 
 - name: "Print System Information"
   debug:
     var: system_id
   tags:
     - debug
+    - create_pdandsp
 
 - name: "Rename system"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/instances/System::{{system_id.json[0].id}}/action/setSystemName
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/instances/System::{{system_id.json[0].id}}/action/setSystemName"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "newName": "{{ vxflex_system_name }}"}
     force_basic_auth: yes
     body_format: json
@@ -186,19 +218,24 @@
   failed_when:
     - rename_result.json.errorCode != 989
   run_once: True
+  ignore_errors: yes
+  tags:
+    - create_pdandsp
 
 - name: "Show Rename results"
   debug:
     var: rename_result
   tags:
     - debug
+    - create_pdandsp
 
 - name: "Set SDC Policy to auto approve"
   uri:
-    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/instances/System::{{system_id.json[0].id}}/action/setRestrictedSdcMode
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/instances/System::{{system_id.json[0].id}}/action/setRestrictedSdcMode"
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "restrictedSdcMode": "None"}
     force_basic_auth: yes
     body_format: json
@@ -208,3 +245,5 @@
       - 201
       - 202
   run_once: True
+  tags:
+    - create_pdandsp
