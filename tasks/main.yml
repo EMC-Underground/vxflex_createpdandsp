@@ -215,9 +215,9 @@
       - 201
       - 202
   register: rename_result
-#  failed_when:
-#    - rename_result.json.errorCode != 989
   run_once: True
+  when:
+    - not (vxflex_system_name == sytem_id.json[0].name)
   ignore_errors: yes
   tags:
     - create_pdandsp
