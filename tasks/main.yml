@@ -215,8 +215,8 @@
       - 201
       - 202
   register: rename_result
-  failed_when:
-    - rename_result.json.errorCode != 989
+#  failed_when:
+#    - rename_result.json.errorCode != 989
   run_once: True
   ignore_errors: yes
   tags:
