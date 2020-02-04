@@ -217,7 +217,7 @@
   register: rename_result
   run_once: True
   when:
-    - not (vxflex_system_name == sytem_id.json[0].name)
+    - not (vxflex_system_name == system_id.json[0].name)
   ignore_errors: yes
   tags:
     - create_pdandsp
