@@ -221,9 +221,8 @@
       - 202
   register: rename_result
   run_once: True
-  when:
-#    - not (vxflex_system_name == system_id.json[0].name)
-    - system_id.json[0].name is not defined
+  when: (not (vxflex_system_name == system_id.json[0].name)) or
+        (system_id.json[0].name is not defined)
   ignore_errors: yes
   tags:
     - create_pdandsp
