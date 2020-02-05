@@ -217,7 +217,7 @@
   register: rename_result
   run_once: True
   when:
-    - not (vxflex_system_name == system_id.json[0].name)
+#    - not (vxflex_system_name == system_id.json[0].name)
     - system_id.json[0].name is not defined
   ignore_errors: yes
   tags:
@@ -226,6 +226,32 @@
 - name: "Show Rename results"
   debug:
     var: rename_result
+  tags:
+    - debug
+    - create_pdandsp
+
+- name: "Get system ID"
+  uri:
+    url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
+    /api/types/System/instances"
+    method: GET
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ auth.json }}"
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  register: system_id
+  run_once: True
+  tags:
+    - create_pdandsp
+
+- name: "Print System Information"
+  debug:
+    var: system_id
   tags:
     - debug
     - create_pdandsp
