@@ -102,6 +102,7 @@
 
 - debug:
     msg: "{{ vxflex_version is version('3.0', '>') }}"
+  run_once: True
   tags:
     - debug
     - create_pdandsp
@@ -109,12 +110,14 @@
 - name: "Check vxflex version and register results to a variable"
   set_fact:
     version_check: "{{ vxflex_version is version('3.0', '<') }}"
+  run_once: True
   tags:
     - debug
     - create_pdandsp
 
 - debug:
     var: version_check
+  run_once: True
   tags:
     - debug
     - create_pdandsp
@@ -188,6 +191,7 @@
 - name: "Print system id"
   debug:
     var: system_id.json[0].id
+  run_once: True
   tags:
     - debug
     - create_pdandsp
@@ -195,6 +199,7 @@
 - name: "Print System Information"
   debug:
     var: system_id
+  run_once: True
   tags:
     - debug
     - create_pdandsp
@@ -226,6 +231,7 @@
 - name: "Show Rename results"
   debug:
     var: rename_result
+  run_once: True
   tags:
     - debug
     - create_pdandsp
@@ -252,6 +258,7 @@
 - name: "Print System Information"
   debug:
     var: system_id
+  run_once: True
   tags:
     - debug
     - create_pdandsp
