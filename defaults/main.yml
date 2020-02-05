@@ -1,2 +1,4 @@
 ---
 # defaults file for vxflex_createpdandsp
+vxflex_storage_pool_name: sp1
+vxflex_protection_domain_name: pd1
