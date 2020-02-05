@@ -2,3 +2,7 @@
 # defaults file for vxflex_createpdandsp
 vxflex_storage_pool_name: sp1
 vxflex_protection_domain_name: pd1
+vxflex_system_name: scaleio
+vxflex_gateway_username: admin
+vxflex_gateway_pw: Password#1
+vxflex_gateway_https_port: 443
