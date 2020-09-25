@@ -104,7 +104,7 @@
     msg: "{{ vxflex_version is version('3.0', '>') }}"
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 - name: "Check vxflex version and register results to a variable"
@@ -112,14 +112,14 @@
     version_check: "{{ vxflex_version is version('3.0', '<') }}"
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 - debug:
     var: version_check
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 
@@ -193,7 +193,7 @@
     var: system_id.json[0].id
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 - name: "Print System Information"
@@ -201,7 +201,7 @@
     var: system_id
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 - name: "Rename system"
@@ -231,7 +231,7 @@
     var: rename_result
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 - name: "Get system ID"
@@ -258,7 +258,7 @@
     var: system_id
   run_once: True
   tags:
-    - debug
+    - [ never, debug ]
     - create_pdandsp
 
 - name: "Set SDC Policy to auto approve"
