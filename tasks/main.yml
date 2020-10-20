@@ -130,6 +130,7 @@
     user: "{{ vxflex_gateway_username }}"
     password: "{{ auth.json }}"
     body: { "protectionDomainId": "{{ protection_domain_id.json }}",
+    "mediaType": "{{ vxflex_media_type }}",
     "name": "{{ vxflex_storage_pool_name }}"}
     force_basic_auth: yes
     body_format: json
@@ -153,7 +154,7 @@
     user: "{{ vxflex_gateway_username }}"
     password: "{{ auth.json }}"
     body: { "protectionDomainId": "{{ protection_domain_id.json }}",
-    "name": "{{ vxflex_storage_pool_name }}", "mediaType": "SSD"}
+    "name": "{{ vxflex_storage_pool_name }}", "mediaType": "{{ vxflex_media_type }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
