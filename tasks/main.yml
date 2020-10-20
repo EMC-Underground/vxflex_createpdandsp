@@ -112,7 +112,6 @@
     version_check: "{{ vxflex_version is version('3.0', '<') }}"
   run_once: True
   tags:
-    - [ never, debug ]
     - create_pdandsp
 
 - debug:
